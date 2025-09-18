@@ -1,8 +1,15 @@
 import { WebSocket, WebSocketServer } from "ws";
-import { existsSync, mkdirSync, promises as fsPromises } from "fs";
+import {
+  existsSync,
+  mkdirSync,
+  promises as fsPromises,
+  rename,
+  renameSync,
+  unlinkSync,
+} from "fs";
 import { join, dirname } from "path";
-import { spawn } from "child_process";
-import { unzipSync } from "fflate";
+import { spawn, spawnSync } from "child_process";
+import { unzipSync, zip } from "fflate";
 import { randomBytes } from "crypto";
 import fetch from "node-fetch";
 
@@ -27,29 +34,18 @@ async function setupTemplates() {
       throw new Error(`Failed to fetch templates: ${response.statusText}`);
     }
 
+    console.log(TEMPLATES_DIR);
+
     const arrayBuffer = await response.arrayBuffer();
     const zipBuffer = new Uint8Array(arrayBuffer);
 
-    // Unzip the buffer
-    const files = unzipSync(zipBuffer);
+    const zipped = await fsPromises.writeFile(TEMPLATES_DIR, zipBuffer);
 
-    // Create the templates directory
-    mkdirSync(TEMPLATES_DIR, { recursive: true });
+    renameSync(TEMPLATES_DIR, TEMPLATES_DIR + ".zip");
 
-    // Write each file to the templates directory
-    for (const name in files) {
-      if (!Object.prototype.hasOwnProperty.call(files, name)) continue;
-      const data = files[name];
-      const filePath = join(TEMPLATES_DIR, name);
-      const dir = dirname(filePath);
+    spawnSync("unzip", ["templates.zip"], { cwd: "src" });
 
-      if (!existsSync(dir)) {
-        mkdirSync(dir, { recursive: true });
-      }
-
-      await fsPromises.writeFile(filePath, data);
-      console.log(`Extracted: ${filePath}`);
-    }
+    unlinkSync("src/templates.zip");
 
     console.log("Templates downloaded and unzipped successfully.");
   } catch (error) {
