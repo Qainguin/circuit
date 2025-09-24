@@ -59,6 +59,7 @@ async function setupTemplates() {
 const allowedOrigins = [
   "http://localhost:5173",
   "https://amperage.beanarchy.org",
+  "https://websocket.tech"
 ];
 
 function rawDataToBuffer(raw: WebSocket.RawData): Buffer {
