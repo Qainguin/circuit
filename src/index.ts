@@ -274,7 +274,7 @@ const wss = new WebSocketServer({
               let makeProcess;
               if (existsSync(join(state.tempDir!, "project.pros"))) {
                 makeProcess = spawn(
-                  "pros",
+                  "/root/pros",
                   ["build-compile-commands", "--no-analytics"],
                   {
                     cwd: state.tempDir,
