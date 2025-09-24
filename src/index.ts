@@ -58,7 +58,7 @@ async function setupTemplates() {
 
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://amperage.beanarchy.org",
+  "https://amperage.dev",
   "https://websocket.tech"
 ];
 
